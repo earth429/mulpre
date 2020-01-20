@@ -450,66 +450,45 @@ int decrement(struct NUMBER *a, struct NUMBER *b) {
     return r;
 }
 
-/*かけざんわりざんまだ負の数対応してないからよろ*/
 // c = a * b
 int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
     int i, j, h, e, aj, bi;
-    struct NUMBER tmp, d;
-    int flag_a = 0; // aが負の値だったとき1に
-    int flag_b = 0; // aが負の値だったとき1に
+    struct NUMBER a_abs, b_abs, d, tmp;
 
     clearByZero(c);
 
-    for (i = 0; i < KETA;i++){
-        bi = b->n[i];
-        h = 0;
-        clearByZero(&d);
-        for (j = 0; j <= KETA;j++){
-            aj = a->n[j];
-            e = aj * bi + h; //e = a->n[j] * b->n[i] + h;
-            d.n[j] = (e % 10); // 1桁目を取り出す
-            e /= 10;
-            h = (e % 10); // 2桁目を取り出す
-            e /= 10;
-            if(i == KETA && h != 0){ // オーバーフローする
-                return -1;
+    if(getSign(a) > 0 && getSign(b) > 0){ // c = a * b
+        for (i = 0; i < KETA;i++){
+            bi = b->n[i];
+            h = 0;
+            clearByZero(&d);
+            for (j = 0; j < KETA;j++){
+                aj = a->n[j];
+                e = aj * bi + h; //e = a->n[j] * b->n[i] + h;
+                d.n[j] = (e % 10); // 1桁目を取り出す
+                e /= 10;
+                h = (e % 10); // 2桁目を取り出す
+                e /= 10;
+                if(j == KETA && h != 0){ // オーバーフローする
+                    return -1;
+                }
             }
+            add(c, &d, &tmp);
+            copyNumber(&tmp, c);
         }
-        add(c, &d, c);
-    }
-
-    /*if(getSign(a) == -1){
-        setSign(a, 1);
-        flag_a++;
-    } else if(getSign(b) == -1){
-        setSign(b, 1);
-        flag_b++;
-    }
-
-    if(numComp(a, b) == -1){
-        copyNumber(&tmp, a);
-        copyNumber(a, b); // bの値をaにする
-        copyNumber(&tmp, b);
-    }
-
-    copyNumber(a, c);
-
-    while(1){
-        add(a, c, c);
-        i++;
-
-        if(i == b){
-            break;
-        }
-    }
-
-    if(flag_a != 0 && flag_b != 0){
-        // スルー
-    } else if(flag_a != 0){
+    } else if(getSign(a) > 0 && getSign(b) < 0){ // c = -a * |b|
+        getAbs(b, &b_abs);
+        multiple(a, &b_abs, c);
         setSign(c, -1);
-    } else if(flag_b != 0){
+    } else if(getSign(a) < 0 && getSign(b) > 0){ // c = -|a| * b
+        getAbs(a, &a_abs);
+        multiple(&a_abs, b, c);
         setSign(c, -1);
-    }*/
+    } else if(getSign(a) < 0 && getSign(b) < 0){ // // c = |a| * |b|
+        getAbs(a, &a_abs);
+        getAbs(b, &b_abs);
+        multiple(&a_abs, &b_abs, c);
+    }
 
     return 0; // 正常終了
 }
@@ -517,6 +496,26 @@ int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
 // c = a / b，d = a % b
 int divide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
     struct NUMBER m, n, p, q;
+
+    // 負の数への対応
+    if(getSign(a) > 0 && getSign(b) < 0){ // bが負
+        getAbs(b, &p);
+        divide(a, &p, c, d);
+        setSign(c, -1);
+        return 0; 
+    } else if(getSign(a) < 0 && getSign(b) > 0){ // aが負
+        getAbs(a, &p);
+        divide(&p, b, c, d);
+        setSign(c, -1);
+        setSign(d, -1);
+        return 0; 
+    } else if(getSign(a) < 0 && getSign(b) < 0) { // a,bが負
+        getAbs(a, &p);
+        getAbs(b, &q);
+        divide(&p, &q, c, d);
+        setSign(d, -1);
+        return 0; 
+    }
 
     clearByZero(c);
     clearByZero(d);
@@ -538,6 +537,39 @@ int divide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *
             break;
         }
     }
+
+    return 0;
+}
+
+// c = aとbの最大公約数
+int gcd(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
+    struct NUMBER tmp, at, bt;
+
+    getAbs(a, &tmp);
+    copyNumber(&tmp, a);
+    copyNumber(&tmp, &at);
+    getAbs(b, &tmp);
+    copyNumber(&tmp, b);
+    copyNumber(&tmp, &bt);
+    clearByZero(c);
+
+    if(isZero(a) != -1 && isZero(b) != -1){ // gcd(0,0) = 0
+        return 0;
+    } else if(isZero(b) != -1) { // gcd(a,0) = a
+        copyNumber(a, c);
+        return 0;
+    }
+
+    while(isZero(&tmp) == -1){
+        divide(a, b, c, &tmp);
+        copyNumber(b, a);
+        copyNumber(&tmp, b);
+    }
+
+    // ループ抜けたら最後のbが最大公約数(bは最後aにコピーしている)
+    copyNumber(a, c);
+    copyNumber(&at, a);
+    copyNumber(&bt, b);
 
     return 0;
 }

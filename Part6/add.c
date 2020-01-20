@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     clearByZero(&a);
     clearByZero(&b);
 
-    setInt(&a, -98);
+    setInt(&a, 98);
     setInt(&b, -3);
 
     return_val = add(&a, &b, &c);

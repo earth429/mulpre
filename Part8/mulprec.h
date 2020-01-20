@@ -31,5 +31,6 @@ int increment(struct NUMBER *, struct NUMBER *);
 int decrement(struct NUMBER *, struct NUMBER *);
 int multiple(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int divide(struct NUMBER *, struct NUMBER *, struct NUMBER *, struct NUMBER *);
+int gcd(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 
 #endif
