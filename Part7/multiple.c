@@ -11,10 +11,10 @@ int main(int argc, char **argv)
 {
     struct NUMBER a, b, c;
     int return_val;
-    int x, y;
+int x, y;
 
-    x = 5;
-    y = 3;
+    x = 16;
+    y = 16;
 
     setInt(&a, x);
     setInt(&b, y);
@@ -41,29 +41,32 @@ int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
     dispNumberZeroSuppress(b);
 
     for (i = 0; i < KETA;i++){
+        printf("iはここですよ%d\n", i);
         bi = b->n[i];
         h = 0;
         clearByZero(&d);
         for (j = 0; j < KETA;j++){
             aj = a->n[j];
             printf("aj:%d\nbi%d\n", aj, bi);
-            printf("a:");
-            dispNumberZeroSuppress(a);
-            printf("\nb:");
-            dispNumberZeroSuppress(b);
-            puts("");
+            //printf("a:");
+            //dispNumberZeroSuppress(a);
+            // printf("\nb:");
+            // dispNumberZeroSuppress(b);
+            // puts("");
             e = aj * bi + h; //e = a->n[j] * b->n[i] + h;
             printf("e:%d\n", e); //
-            d.n[j + i] = (e % 10); // 1桁目を取り出す
-            printf("dl:");
-            dispNumberZeroSuppress(&d);
-            puts("");
-            e /= 10;
-            h = (e % 10); // 2桁目を取り出す
-            e /= 10;
-            if(j == KETA && h != 0){ // オーバーフローする
-                return -1;
+            if(j + i < KETA){
+                d.n[j + i] = (e % 10); // 1桁目を取り出す
+                printf("dl:");
+                dispNumberZeroSuppress(&d);
+                puts("");
+                e /= 10;
+                h = e; // 2桁目を取り出す
             }
+        }
+
+        if(h != 0){ // オーバーフローする
+            return -1;
         }
         printf("c:");
         dispNumberZeroSuppress(c);
@@ -72,7 +75,6 @@ int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
         puts("");
         add(c, &d, &tmp);
         copyNumber(&tmp, c);
-        break;
     }
 
     /*if(getSign(a) == -1){

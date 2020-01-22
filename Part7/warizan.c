@@ -8,21 +8,30 @@ int divide(struct NUMBER *, struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int main(int argc, char **argv)
 {
     struct NUMBER a, b, c, d;
-    int return_val;
+    // int return_val;
     int x, y;
+    int i;
 
-    x = -5;
-    y = 3;
+    srandom(time(NULL));
 
-    setInt(&a, x);
-    setInt(&b, y);
+    for (i = 0; i < 10;i++){
+        x = (random() % 1000);
+        y = (random() % 100);
 
-    printf("x = %d\ny = %d\nx / y = %d\nx %% y = %d\n", x, y, x / y, x % y);
+        setInt(&a, x);
+        setInt(&b, y);
 
-    return_val = divide(&a, &b, &c, &d);
-    dispNumberZeroSuppress(&c);
-    dispNumberZeroSuppress(&d);
-    printf("\n戻り値 = %d", return_val);
+        printf("x = %d\ny = %d\nx / y = %d\n", x, y, x / y);
+        dispNumberZeroSuppress(&a);
+        puts("");
+        dispNumberZeroSuppress(&b);
+        puts("");
+
+        divide(&a, &b, &c, &d);
+        setText(&c, x / y);
+        checkText();
+    }
+
 
     return 0;
 }

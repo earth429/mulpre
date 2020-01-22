@@ -264,7 +264,7 @@ void checkText() {
             fscanf(fp, "%d\n", &mul_num);
 
             if(int_num != mul_num){
-                printf("値が違います\nint = %d\nmul = %d", int_num, mul_num);
+                printf("値が違います\nint = %d\nmul = %d\n", int_num, mul_num);
             }
         }
         fclose(fp);
@@ -308,7 +308,7 @@ int numComp(struct NUMBER *a, struct NUMBER *b) {
         return -1;
     }
 
-    if(sa == 1 && sb == 1){ // aが正、bが負の時
+    if(sa == 1 && sb == 1){ // aが正、bが正の時
         for (i = KETA - 1; i >= 0;i--){
             if(a->n[i] > b->n[i]){ // aに大きい値があった
                 return 1;
@@ -465,13 +465,14 @@ int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
             for (j = 0; j < KETA;j++){
                 aj = a->n[j];
                 e = aj * bi + h; //e = a->n[j] * b->n[i] + h;
-                d.n[j] = (e % 10); // 1桁目を取り出す
-                e /= 10;
-                h = (e % 10); // 2桁目を取り出す
-                e /= 10;
-                if(j == KETA && h != 0){ // オーバーフローする
-                    return -1;
-                }
+                if(j + i < KETA){ // 配列の範囲外をアクセスしないように
+                    d.n[j + i] = (e % 10); // 1桁目を取り出す
+                    e /= 10;
+                    h = e; // 2桁目を取り出す
+                } 
+            }
+            if(h != 0){ // オーバーフローする
+                return -1;
             }
             add(c, &d, &tmp);
             copyNumber(&tmp, c);
@@ -536,6 +537,36 @@ int divide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *
             copyNumber(&n, d);
             break;
         }
+    }
+
+    return 0;
+}
+
+// c = a^b
+int power(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
+    struct NUMBER i, tmp, i_tmp;
+    setInt(&i, 1);
+    clearByZero(c);
+
+    if(isZero(b) != -1){ // 0乗のとき
+        setInt(c, 1);
+        return 0;
+    } else if(numComp(b, &i) == 0){ // 1乗のとき
+        copyNumber(a, c);
+        return 0;
+    }
+
+    copyNumber(a, &tmp);
+
+    while(1){
+        if(numComp(&i, b) != -1){ // i < bが満たされなくなったら
+            break;
+        }
+        multiple(a, &tmp, c);
+        copyNumber(c, &tmp);
+
+        increment(&i, &i_tmp);
+        copyNumber(&i_tmp, &i);
     }
 
     return 0;

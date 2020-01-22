@@ -8,20 +8,36 @@ int multiple(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int main(int argc, char **argv)
 {
     struct NUMBER a, b, c;
-    int return_val;
+    //int return_val;
     int x, y;
+    int i;
 
-    x = -5;
-    y = -3;
+    srandom(time(NULL));
 
-    setInt(&a, x);
-    setInt(&b, y);
+    for (i = 0; i < 10;i++){
+        x = (random() % 1000);
+        y = (random() % 1000);
 
-    printf("x = %d\ny = %d\nx * y = %d\n", x, y, x * y);
+        setInt(&a, x);
+        setInt(&b, y);
+
+        printf("x = %d\ny = %d\nx * y = %d\n", x, y, x * y);
+        dispNumberZeroSuppress(&a);
+        puts("");
+        dispNumberZeroSuppress(&b);
+        puts("");
+
+        multiple(&a, &b, &c);
+        setText(&c, x * y);
+        checkText();
+    }
+        
+
+    /*printf("x = %d\ny = %d\nx * y = %d\n", x, y, x * y);
 
     return_val = multiple(&a, &b, &c);
     dispNumberZeroSuppress(&c);
-    printf("\n戻り値 = %d", return_val);
+    printf("\n戻り値 = %d", return_val);*/
 
     return 0;
 }
@@ -41,13 +57,15 @@ int multiple(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
             for (j = 0; j < KETA;j++){
                 aj = a->n[j];
                 e = aj * bi + h; //e = a->n[j] * b->n[i] + h;
-                d.n[j] = (e % 10); // 1桁目を取り出す
-                e /= 10;
-                h = (e % 10); // 2桁目を取り出す
-                e /= 10;
-                if(j == KETA && h != 0){ // オーバーフローする
-                    return -1;
+                if(j + i < KETA){ // 配列の範囲外をアクセスしないように
+                    d.n[j + i] = (e % 10); // 1桁目を取り出す
+                    e /= 10;
+                    h = e; // 2桁目を取り出す
                 }
+                
+            }
+            if(h != 0){ // オーバーフローする
+                return -1;
             }
             add(c, &d, &tmp);
             copyNumber(&tmp, c);

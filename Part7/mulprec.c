@@ -264,7 +264,7 @@ void checkText() {
             fscanf(fp, "%d\n", &mul_num);
 
             if(int_num != mul_num){
-                printf("値が違います\nint = %d\nmul = %d", int_num, mul_num);
+                printf("値が違います\nint = %d\nmul = %d\n", int_num, mul_num);
             }
         }
         fclose(fp);

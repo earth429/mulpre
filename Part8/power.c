@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "mulprec.h"
 
 int power(struct NUMBER *, struct NUMBER *, struct NUMBER *);
@@ -9,46 +10,69 @@ int power(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int main(int argc, char **argv)
 {
     struct NUMBER a, b, c;
-    int return_val;
+    //int return_val;
     int x, y;
+    int i;
 
-    x = 2;
-    y = 5;
+    srandom(time(NULL));
 
-    setInt(&a, x);
-    setInt(&b, y);
+    for (i = 0; i < TRY;i++){
+        x = (random() % 10);
+        y = (random() % 10);
 
-    printf("x = %d\ny = %d\nx^y = %f\n", x, y, pow(x, y));
+        setInt(&a, x);
+        setInt(&b, y);
 
+        power(&a, &b, &c);
+        /*printf("ここからスタート\nx = %d\ny = %d\nx^y = %f\n", x, y, pow(x, y));
+        printf("c = ");
+        dispNumberZeroSuppress(&c);
+        puts("");*/
+
+        setText(&c, pow(x, y));
+        checkText();
+    }
+
+    /*printf("x = %d\ny = %d\nx^y = %f\n", x, y, pow(x, y));
     return_val = power(&a, &b, &c);
     dispNumberZeroSuppress(&c);
-    printf("\n戻り値 = %d", return_val);
+    printf("\n戻り値 = %d", return_val);*/
 
     return 0;
 }
 
 // c = a^b
 int power(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
-    struct NUMBER i, tmp1, tmp2, tmp3;
-    clearByZero(&i);
+    struct NUMBER i, tmp, i_tmp;
+    setInt(&i, 1);
     clearByZero(c);
-    clearByZero(&i);
-    clearByZero(b);
+
+    if(isZero(b) != -1){ // 0乗のとき
+        setInt(c, 1);
+        return 0;
+    } else if(numComp(b, &i) == 0){ // 1乗のとき
+        copyNumber(a, c);
+        return 0;
+    }
+
+    copyNumber(a, &tmp);
 
     while(1){
+        /*printf("c:");
+        dispNumberZeroSuppress(c);
+        puts("");
+        printf("i:");
+        dispNumberZeroSuppress(&i);
+        puts("");
+        printf("numComp = %d\n", numComp(&i, b));*/
         if(numComp(&i, b) != -1){ // i < bが満たされなくなったら
-            clearByZero(&i);
-            clearByZero(b);
-            puts("neko");
             break;
         }
+        multiple(a, &tmp, c);
+        copyNumber(c, &tmp);
 
-        multiple(a, a, &tmp1);
-        add(&tmp1, c, &tmp2);
-        copyNumber(&tmp2, c);
-
-        increment(&i, &tmp3);
-        copyNumber(&tmp3, &i);
+        increment(&i, &i_tmp);
+        copyNumber(&i_tmp, &i);
     }
 
     return 0;
