@@ -7,12 +7,31 @@ int divide(struct NUMBER *, struct NUMBER *, struct NUMBER *, struct NUMBER *);
 
 int main(int argc, char **argv)
 {
+    double t1 = time(NULL);
     struct NUMBER a, b, c, d;
     // int return_val;
     int x, y;
     int i;
 
-    srandom(time(NULL));
+    x = 100000000;
+    y = 2;
+
+    setInt(&a, x);
+    setInt(&b, y);
+
+    printf("x = %d\ny = %d\nx / y = %d\nx %% y = %d\n", x, y, x / y, x % y);
+    dispNumberZeroSuppress(&a);
+    puts("");
+    dispNumberZeroSuppress(&b);
+    puts("");
+
+    divide(&a, &b, &c, &d);
+    dispNumberZeroSuppress(&c);
+    puts("");
+    dispNumberZeroSuppress(&d);
+    puts("");
+
+    /*srandom(time(NULL));
 
     for (i = 0; i < 10;i++){
         x = (random() % 1000);
@@ -30,9 +49,10 @@ int main(int argc, char **argv)
         divide(&a, &b, &c, &d);
         setText(&c, x / y);
         checkText();
-    }
+    }*/
 
-
+    double t2 = time(NULL);
+    printf("処理時間:%f\n", t2 - t1);
     return 0;
 }
 

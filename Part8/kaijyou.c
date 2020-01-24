@@ -39,17 +39,17 @@ void tailCall(struct NUMBER *a, struct NUMBER *b, struct NUMBER *sofar){
 
 // b = a!
 int factorial(struct NUMBER *a, struct NUMBER *b) {
-    if(getSign(a) == -1){ // 引数が負だと階乗は計算できない
+    if(isZero(a) != -1){ // 0! = 1
+        setInt(b, 1);
+        return 0;
+    } else if(getSign(a) == -1){ // 引数が負だと階乗は計算できない
         return -2;
     }
 
     struct NUMBER one;
     setInt(&one, 1);
 
-    if(isZero(a) != -1){ // 0! = 1 0が-になってるからreturn-2されちまう
-        setInt(b, 1);
-        return 0;
-    } else if(numComp(a, &one) == 0){ // 1! = 1
+    if(numComp(a, &one) == 0){ // 1! = 1
         setInt(b, 1);
         return 0;
     }
