@@ -11,18 +11,25 @@ int main(int argc, char **argv)
 {
     double t1 = time(NULL);
 
-    struct NUMBER a, b, c;
+    struct NUMBER a, b, c, d, a_tmp;
     //int return_val;
 
-    setInt(&b, 100); // 
+    setInt(&b, 300); // 
 
+    printf("ネイピア数計算開始\n");
     neipia(&a, &b);
+    copyNumber(&a, &a_tmp);
     dispNumberZeroSuppress(&a);
-    printf("\nルート計算開始\n");
+    printf("\n平方根計算開始\n");
     sqrt_newton(&a, &c);
     dispNumberZeroSuppress(&c);
+    printf("\n三乗根計算開始\n");
+    curt(&a_tmp, &d);
+    dispNumberZeroSuppress(&d);
     puts("");
     setText(&a, 9696);
+    setText(&c, 2626);
+    setText(&d, 7676);
 
     double t2 = time(NULL);
     printf("処理時間:%f\n", t2 - t1);
