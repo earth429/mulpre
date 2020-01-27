@@ -11,17 +11,11 @@ int main(int argc, char **argv)
     struct NUMBER a, b, c, d;
     //int return_val;
     int x, y;
-    //int i;
+    
 
     x = 49585;
     y = 98;
 
-    /*int z = 9800;
-    struct NUMBER e, f;
-    setInt(&e, z);
-    sub(&a, &e, &f);
-    dispNumberZeroSuppress(&f);
-    puts("");*/
 
     setInt(&a, x);
     setInt(&b, y);
@@ -36,8 +30,10 @@ int main(int argc, char **argv)
 
     /*srandom(time(NULL));
 
+    int i;
+
     for (i = 0; i < TRY;i++){
-        x = (random() % 1000000);
+        x = (random() % 100000);
         y = (random() % 100);
 
         setInt(&a, x);

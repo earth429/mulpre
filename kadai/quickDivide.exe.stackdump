@@ -1,9 +1,0 @@
-Exception: STATUS_INTEGER_DIVIDE_BY_ZERO at eip=0040127F
-eax=0007761C ebx=0062CC7C ecx=00000000 edx=00000000 esi=612D909A edi=00000076
-ebp=0062CC58 esp=0062C5C0 program=C:\cygwin\home\sa6ch\algo\mulpre\kadai\quickDivide.exe, pid 2351, thread main
-cs=0023 ds=002B es=002B fs=0053 gs=002B ss=002B
-Stack trace:
-Frame     Function  Args
-0062CC58  0040127F (00000001, 0062CC7C, 800000D0, 6100AA98)
-0062CD08  6100AAFA (00000000, 0062CD64, 61009A90, 00000000)
-End of stack trace

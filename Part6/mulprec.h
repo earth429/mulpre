@@ -3,7 +3,7 @@
 #define MULPREC_H
 
 #define KETA 15
-#define TRY 10 // 自動チェック用
+#define TRY 100 // 自動チェック用
 
 struct NUMBER{
     int n[KETA]; // 各桁の値

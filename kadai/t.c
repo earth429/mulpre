@@ -1,4 +1,4 @@
-//7703.000000
+// time:7703.000000
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,14 +11,18 @@ int main(int argc, char **argv)
 {
     double t1 = time(NULL);
 
-    struct NUMBER a, b;
-    int return_val;
+    struct NUMBER a, b, c;
+    //int return_val;
 
-    setInt(&b, 1000);
+    setInt(&b, 100); // 
 
-    return_val = neipia(&a, &b);
+    neipia(&a, &b);
     dispNumberZeroSuppress(&a);
-    printf("\n戻り値 = %d", return_val);
+    printf("\nルート計算開始\n");
+    sqrt_newton(&a, &c);
+    dispNumberZeroSuppress(&c);
+    puts("");
+    setText(&a, 9696);
 
     double t2 = time(NULL);
     printf("処理時間:%f\n", t2 - t1);
@@ -45,8 +49,11 @@ int neipia(struct NUMBER *a, struct NUMBER *b)
     }
     setInt(&one,1);//足していくための1
     multiple(&n,&divided,a);//2*1000000... = a
+    //int i = 0;
     while(1){
         quickDivide(&divided,&divid,&quotient,&rest);
+        add(a,&quotient,&rest);
+        copyNumber(&rest, a);
         /*printf("divided:");
         dispNumberZeroSuppress(&divided);
         puts("");
@@ -63,13 +70,19 @@ int neipia(struct NUMBER *a, struct NUMBER *b)
         copyNumber(&rest, a);
         puts("inu");*/
         if(numComp(b,&n) == 0){
-            puts("neko");
             break;
         }
         add(&n,&one,&rest);
         copyNumber(&rest, &n);
         multiple(&divid,&n,&rest);
         copyNumber(&rest, &divid);
+
+        /*i++;
+        if(i==10){
+            puts("10ループ");
+            i = 0;
+        }*/
     }
+
     return 0;
 }

@@ -116,10 +116,6 @@ int mulBy10(struct NUMBER *a, struct NUMBER *b){
 
     setSign(b, getSign(a)); // 符号の共通化
 
-    if(isZero(a) != -1){ // aが0だったら
-        return 0;
-    }
-
     // オーバーフローする
     if(a->n[KETA - 1] != 0){
         return -1;
@@ -145,12 +141,8 @@ int divBy10(struct NUMBER *a, struct NUMBER *b){
 
     remainder = getSign(a) * a->n[0]; // 余りに符号をつける
 
-    if(isZero(a) != -1){ // aが0だったら
-        return 0;
-    }
-
-    for (i = 0; i < KETA - 1;i++){
-        b->n[i] = a->n[i + 1];
+    for (i = 1; i <= KETA - 2;i++){
+        b->n[i - 1] = a->n[i];
     }
 
     b->n[KETA - 1] = 0;
@@ -554,10 +546,6 @@ int divide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *
 int quickDivide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
     struct NUMBER tmp1, tmp2, a_tmp, e;
 
-    if(isZero(b) != -1){ // ゼロ除算エラー
-        return -1;
-    }
-
     // 負の数への対応
     if(getSign(a) > 0 && getSign(b) < 0){ // bが負
         getAbs(b, &tmp1);
@@ -578,21 +566,23 @@ int quickDivide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUM
         return 0; 
     }
 
+    if(isZero(b) != -1){ // ゼロ除算エラー
+        return -1;
+    }
+
     clearByZero(c); // 1
     copyNumber(a, &a_tmp);
-    clearByZero(d);
 
     while(1){
-        if(numComp(&a_tmp, b) >= 0){ // 2.a>=b
+        if(numComp(&a_tmp, b) != -1){ // 2.a>=b
             copyNumber(b, d); // 3
             setInt(&e, 1); // 4
             while(1){ // a > dになる最大のdを探す
-                if(numComp(&a_tmp, d) >= 0){
-                    mulBy10(d, &tmp1);
-                    copyNumber(&tmp1, d);
-                    mulBy10(&e, &tmp2);
-                    copyNumber(&tmp2, &e);
-                } else { // 5.a > dでなくなったら
+                mulBy10(d, &tmp1);
+                copyNumber(&tmp1, d);
+                mulBy10(&e, &tmp2);
+                copyNumber(&tmp2, &e);
+                if(numComp(&a_tmp, d) != 1){ // 5.a > dでなくなったら
                     divBy10(d, &tmp1); // 1つ前の値がa > dなので
                     copyNumber(&tmp1, d);
                     divBy10(&e, &tmp2);
@@ -605,7 +595,7 @@ int quickDivide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUM
             add(c, &e, &tmp2); // 8
             copyNumber(&tmp2, c);
             // 9は2に戻る
-        } else if(numComp(&a_tmp, b) < 0){ // 終了, 10
+        } else { // 終了, 10
             copyNumber(&a_tmp, d);
             break; // 11
         }
@@ -714,146 +704,3 @@ int gcd(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
 
     return 0;
 }
-
-// b = sqrt(a) Newton-Raphson
-int sqrt_newton(struct NUMBER *a, struct NUMBER *b) {
-    struct NUMBER x, ox, tx, zero, one, two, quotient, sum, rest; // x:現在の平方根の近似値,ox:1つ前のx,tx:2つ前のx
-    clearByZero(b);
-    setInt(&zero, 0);
-    setInt(&one, 1);
-    setInt(&two, 2);
-
-    quickDivide(a, &two, &x, &rest);
-    if(isZero(&x) != -1 || numComp(&x, &one) == 0){ // a = 0 or 1なら sqrt(a) = a
-        copyNumber(a, b);
-        return 0;
-    }
-    if (numComp(&x, &zero) == -1){ // a < 0ならエラーで-1を返す
-        return -1;
-    }
-
-    copyNumber(&x, &ox);
-
-    while(1){
-        copyNumber(&ox, &tx);
-        copyNumber(&x, &ox);
-        /*printf("a/");
-        dispNumberZeroSuppress(&x);
-        puts("");*/
-        quickDivide(a, &ox, &quotient, &rest);
-        add(&ox, &quotient, &sum);
-        /*printf("b/");
-        dispNumberZeroSuppress(&x);
-        puts("");*/
-        quickDivide(&sum, &two, &x, &rest);
-
-        if(numComp(&x, &ox) == 0){ // 収束
-            break;
-        }
-        if(numComp(&x, &tx) == 0){ // 振動
-            if(numComp(&ox, &x) == -1){ // 小さい方を取る
-                copyNumber(&ox, &x);
-            }
-            break;
-        }
-        /*printf("c/");
-        dispNumberZeroSuppress(&x);
-        puts("");*/
-    }
-
-    copyNumber(&x, b);
-    return 0;
-}
-
-// デバック用
-/*int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
-    struct NUMBER tmp1, tmp2, a_tmp, e;
-
-    if(isZero(b) != -1){ // ゼロ除算エラー
-        return -1;
-    }
-
-    // 負の数への対応
-    if(getSign(a) > 0 && getSign(b) < 0){ // bが負
-        getAbs(b, &tmp1);
-        divide(a, &tmp1, c, d);
-        setSign(c, -1);
-        return 0; 
-    } else if(getSign(a) < 0 && getSign(b) > 0){ // aが負
-        getAbs(a, &tmp1);
-        divide(&tmp1, b, c, d);
-        setSign(c, -1);
-        setSign(d, -1);
-        return 0; 
-    } else if(getSign(a) < 0 && getSign(b) < 0) { // a,bが負
-        getAbs(a, &tmp1);
-        getAbs(b, &tmp2);
-        divide(&tmp1, &tmp2, c, d);
-        setSign(d, -1);
-        return 0; 
-    }
-
-    clearByZero(c); // 1
-    copyNumber(a, &a_tmp);
-    clearByZero(d);
-
-    while(1){
-        if(numComp(&a_tmp, b) >= 0){ // 2.a>=b
-            printf("a_tmp:");
-            dispNumberZeroSuppress(&a_tmp);
-            puts("");
-            printf("b:");
-            dispNumberZeroSuppress(b);
-            puts("");
-            printf("c:");
-            dispNumberZeroSuppress(c);
-            puts("");
-            printf("d:");
-            dispNumberZeroSuppress(d);
-            puts("");
-            copyNumber(b, d); // 3
-            printf("d2:");
-            dispNumberZeroSuppress(d);
-            puts("");
-            setInt(&e, 1); // 4
-            int val1,val2;
-            while(1){ // a > dになる最大のdを探す
-                if(numComp(&a_tmp, d) >= 0){
-                    printf("d1:");
-                    dispNumberZeroSuppress(d);
-                    puts("");
-                    mulBy10(d, &tmp1);
-                    copyNumber(&tmp1, d);
-                    mulBy10(&e, &tmp2);
-                    copyNumber(&tmp2, &e);
-                } else { // 5.a > dでなくなったら
-                    divBy10(d, &tmp1); // 1つ前の値がa > dなので
-                    copyNumber(&tmp1, d);
-                    divBy10(&e, &tmp2);
-                    copyNumber(&tmp2, &e);
-                    printf("d2:");
-                    dispNumberZeroSuppress(d);
-                    puts("");
-                    break;
-                }
-            }
-            printf("val1:%d\nval2:%d\n", val1, val2);
-            printf("d3:");
-            dispNumberZeroSuppress(d);
-            puts("");
-            sub(&a_tmp, d, &tmp1); // 7
-            copyNumber(&tmp1, &a_tmp);
-            add(c, &e, &tmp2); // 8
-            copyNumber(&tmp2, c);
-            // 9は2に戻る
-            printf("c:");
-            dispNumberZeroSuppress(c);
-            puts("");
-        } else if(numComp(&a_tmp, b) < 0){ // 終了, 10
-            copyNumber(&a_tmp, d);
-            break; // 11
-        }
-    }
-
-    return 0;
-}*/

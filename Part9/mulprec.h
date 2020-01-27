@@ -2,7 +2,7 @@
 #ifndef MULPREC_H // インクルードガード
 #define MULPREC_H
 
-#define KETA 500
+#define KETA 100
 #define TRY 1000 // 自動チェック用
 
 struct NUMBER{
@@ -34,6 +34,5 @@ int divide(struct NUMBER *, struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int quickDivide(struct NUMBER *, struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int power(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int gcd(struct NUMBER *, struct NUMBER *, struct NUMBER *);
-int sqrt_newton(struct NUMBER *, struct NUMBER *);
 
 #endif

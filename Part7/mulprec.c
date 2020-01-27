@@ -391,10 +391,10 @@ int sub(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
             for (i = 0; i < KETA;i++){
                 x = a->n[i] - h;
                 y = b->n[i];
-                if(a->n[i] < b->n[i]){
+                if(x < y){
                     c->n[i] = 10 + x - y;
                     h = 1; // 桁借りをした
-                } else if(a->n[i] >= b->n[i]){
+                } else if(x >= y){
                     c->n[i] = x - y;
                     h = 0; // 桁借りをしていない
                 }

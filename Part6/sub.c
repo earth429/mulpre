@@ -9,33 +9,47 @@
 int main(int argc, char **argv)
 {
     struct NUMBER a, b, c;
-    int return_val;
+    //int return_val;
     int x, y;
 
-    srandom(time(NULL));
-
-    clearByZero(&a);
-    clearByZero(&b);
-
-    x = random() % 201 - 100; // -100から100  % 201 - 100
-    y = random() % 201 - 100; // -100から100  % 201 - 100
-
-    printf("x = %d\ny = %d\nx - y = %d\n", x, y, x - y);
+    x = 521;
+    y = 23;
 
     setInt(&a, x);
     setInt(&b, y);
-    dispNumberZeroSuppress(&a);
-    printf("\n");
-    dispNumberZeroSuppress(&b);
-    printf("\n");
 
-    return_val = sub(&a, &b, &c);
+    printf("x = %d\ny = %d\nx - y = %d\n", x, y, x - y);
+    sub(&a, &b, &c);
     dispNumberZeroSuppress(&c);
-    printf("\n戻り値 = %d", return_val);
+
+    /*srandom(time(NULL));
+    int i;
+    for (i = 0; i < TRY;i++){
+        x = random() % 1001 ; // -100から100  % 201 - 100
+        y = random() % 201 - 100; // -100から100  % 201 - 100
+
+        printf("x = %d\ny = %d\nx - y = %d\n", x, y, x - y);
+
+        setInt(&a, x);
+        setInt(&b, y);
+        dispNumberZeroSuppress(&a);
+        printf("\n");
+        dispNumberZeroSuppress(&b);
+        printf("\n");
+
+        return_val = sub(&a, &b, &c);
+        dispNumberZeroSuppress(&c);
+        printf("\n戻り値 = %d", return_val);
+        setText(&c, x - y);
+        checkText();
+    }*/
+
+        
 
     return 0;
 }
 
+// 521-23ができない
 int sub(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
     int h = 0;
     int i;
@@ -54,10 +68,10 @@ int sub(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
             for (i = 0; i < KETA;i++){
                 x = a->n[i] - h;
                 y = b->n[i];
-                if(a->n[i] < b->n[i]){
+                if(x < y){
                     c->n[i] = 10 + x - y;
                     h = 1; // 桁借りをした
-                } else if(a->n[i] >= b->n[i]){
+                } else if(x >= y){
                     c->n[i] = x - y;
                     h = 0; // 桁借りをしていない
                 }
