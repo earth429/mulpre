@@ -1,8 +1,8 @@
 // #defineとstructとプロトタイプ宣言を書く
-#ifndef MULPREC_H // インクルードガード
-#define MULPREC_H
+/*#ifndef MULPREC_H // インクルードガード
+#define MULPREC_H*/
 
-#define KETA 200
+#define KETA 100
 #define TRY 1000 // 自動チェック用
 
 struct NUMBER{
@@ -36,5 +36,8 @@ int power(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int gcd(struct NUMBER *, struct NUMBER *, struct NUMBER *);
 int sqrt_newton(struct NUMBER *, struct NUMBER *);
 int curt(struct NUMBER *, struct NUMBER *);
+void setTextForCheck(struct NUMBER *);
+void checkTextForCheck();
+int getDigit(struct NUMBER *);
 
-#endif
+//#endif

@@ -9,30 +9,74 @@ int neipia(struct NUMBER *, struct NUMBER *);
 
 int main(int argc, char **argv)
 {
+    //system("curl -X POST https://maker.ifttt.com/trigger/START/with/key/o1MGI2dHX6aKborXX0xlb");
+    //puts("");
     double t1 = time(NULL);
 
-    struct NUMBER a, b, c, d, a_tmp;
-    //int return_val;
+    struct NUMBER a, b, c, d, one, two, three, a_tmp;
+    int val;
 
-    setInt(&b, 300); // 
+    setInt(&one ,1);
+    setInt(&two, 2);
+    setInt(&three, 3);
+
+    setInt(&b, 500); //
 
     printf("ネイピア数計算開始\n");
     neipia(&a, &b);
-    copyNumber(&a, &a_tmp);
-    dispNumberZeroSuppress(&a);
+    dispNumber(&a);
+    //setTextForCheck(&a);
+    //checkTextForCheck();
+    val = getDigit(&a);
+    printf("\nval1:%d\n", val);
+    // exit(1);
+    
+    double t3 = time(NULL);
+    printf("\n途中時間:%f\n", t3 - t1);
     printf("\n平方根計算開始\n");
+    divBy10(&a, &a_tmp);
+    copyNumber(&a_tmp, &a);
     sqrt_newton(&a, &c);
     dispNumberZeroSuppress(&c);
+    val = getDigit(&c);
+    printf("\nval2:%d\n", val);
+    t3 = time(NULL);
+    printf("\n途中時間:%f\n", t3 - t1);
     printf("\n三乗根計算開始\n");
-    curt(&a_tmp, &d);
+    //divBy10(&a, &a_tmp);
+    //copyNumber(&a_tmp, &a);
+    //divBy10(&a, &a_tmp);
+    //copyNumber(&a_tmp, &a);
+
+
+    /*quickDivide(&a, &three, &b, &rest);
+    if(numComp(&rest, &one) == 0){
+        mulBy10(&a, &a_tmp);
+        copyNumber(&a_tmp, &a);
+        mulBy10(&a, &a_tmp);
+        copyNumber(&a_tmp, &a);
+    } else if(numComp(&rest, &two)){
+        mulBy10(&a, &a_tmp);
+        copyNumber(&a_tmp, &a);
+    }*/
+
+    mulBy10(&a, &a_tmp);
+    copyNumber(&a_tmp, &a);
+    curt(&a, &d);
     dispNumberZeroSuppress(&d);
-    puts("");
-    setText(&a, 9696);
-    setText(&c, 2626);
-    setText(&d, 7676);
+    val = getDigit(&d);
+    printf("\nval3:%d\n", val);
+    //setText(&a, 7);
+    //setText(&c, 8);
+    //setText(&d, 9);
+
+    //setTextForCheck(&a);
+    //setTextForCheck(&c);
+    //setTextForCheck(&d);
+    //checkTextForCheck();
 
     double t2 = time(NULL);
-    printf("処理時間:%f\n", t2 - t1);
+    printf("\n処理時間:%f\n", t2 - t1);
     //system("curl -X POST https://maker.ifttt.com/trigger/END/with/key/o1MGI2dHX6aKborXX0xlb");
     return 0;
 }
@@ -48,7 +92,7 @@ int neipia(struct NUMBER *a, struct NUMBER *b)
     //clearByZero(&quotient);
     clearByZero(a);
 
-    divided.n[KETA-2] = 1;
+    divided.n[KETA-1] = 1;
     setInt(&n,2);
     setInt(&divid,2);
     if(numComp(&n,b) == 1){

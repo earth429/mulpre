@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+//#include <unistd.h>
 #include "mulprec.h"
 
 // 多倍長変数の値をゼロクリアし、符号をプラスにセットする
@@ -553,6 +554,7 @@ int divide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *
 // c = a / b，d = a % b(改良版)
 int quickDivide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
     struct NUMBER tmp1, tmp2, a_tmp, e;
+    int return_val;
 
     if(isZero(b) != -1){ // ゼロ除算エラー
         return -1;
@@ -588,7 +590,10 @@ int quickDivide(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUM
             setInt(&e, 1); // 4
             while(1){ // a > dになる最大のdを探す
                 if(numComp(&a_tmp, d) >= 0){
-                    mulBy10(d, &tmp1);
+                    return_val = mulBy10(d, &tmp1);
+                    if(return_val == -1){ // dがオーバーフロー
+                        break;
+                    }
                     copyNumber(&tmp1, d);
                     mulBy10(&e, &tmp2);
                     copyNumber(&tmp2, &e);
@@ -722,7 +727,7 @@ int sqrt_newton(struct NUMBER *a, struct NUMBER *b) {
     setInt(&one, 1);
     setInt(&two, 2);
 
-    quickDivide(a, &two, &x, &rest);
+    quickDivide(a, &two, &x, &rest); // 初期値の決定
     if(isZero(&x) != -1 || numComp(&x, &one) == 0){ // a = 0 or 1なら sqrt(a) = a
         copyNumber(a, b);
         return 0;
@@ -763,7 +768,7 @@ int curt(struct NUMBER *a, struct NUMBER *b) {
     setInt(&two, 2);
     setInt(&three, 3);
 
-    quickDivide(a, &two, &x, &rest);
+    quickDivide(a, &three, &x, &rest); // 初期値の決定
     if(isZero(&x) != -1 || numComp(&x, &one) == 0){ // a = 0 or 1なら curt(a) = a
         copyNumber(a, b);
         return 0;
@@ -796,91 +801,126 @@ int curt(struct NUMBER *a, struct NUMBER *b) {
 
     copyNumber(&x, b);
     return 0;
+}
+
+// 多倍長の値をtextに書き込む
+void setTextForCheck(struct NUMBER *a) {
+    FILE *fp;
+    int i;
+
+    if ((fp = fopen("VerificationOfAccounts.txt", "a")) == NULL) {
+		printf("ファイルをオープンできません。\n");
+	} else {
+        fprintf(fp, "\n");
+        // 多倍長変数の書き込み
+        for (i = KETA - 1; i >= 0; i--) {
+            if(a->n[i] != 0){
+                break;
+            }
+
+            if(i == 0){
+                fprintf(fp, "%d", a->n[i]);
+            }
+        }
+        for (; i >= 0;i--) {
+            fprintf(fp, "%d", a->n[i]);
+        }
+
+        fclose(fp);
+    }
+}
+
+// setTextで書き込んだ値を比較して正しいかを調べる
+void checkTextForCheck() {
+    FILE *fp;
+    int i;
+    char theory1[KETA];
+    char theory2[KETA];
+    char theory3[KETA];
+    char calc1[KETA];
+    char calc2[KETA];
+    char calc3[KETA];
+
+    if((fp = fopen("neipia.txt", "r")) == NULL){
+        printf("ファイルをオープンできません。\n");
+    } else {
+        while(fgets(theory1, KETA, fp) != NULL);
+    }
+    if((fp = fopen("neipia.txt", "r")) == NULL){
+        printf("ファイルをオープンできません。\n");
+    } else {
+        while(fgets(theory2, KETA, fp) != NULL);
+    }
+
+    // 理論値の読み込み
+    scanf("%s", theory1);
+    scanf("%s", theory2);
+    scanf("%s", theory3);
+    // 計算した値の読み込み
+    scanf("%s", calc1);
+    scanf("%s", calc2);
+    scanf("%s", calc3);
+
+    for (i = 0; i < KETA;i++){
+        if(theory1[i] != calc1[i]){
+            printf("\nネイピア数の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory1[i], calc1[i]);
+        }
+        if(theory2[i] != calc2[i]){
+            printf("\n平方根の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory2[i], calc2[i]);
+        }
+        if(theory3[i] != calc3[i]){
+            printf("\n三乗根の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory3[i], calc3[i]);
+        }
+    }    
+}
+
+// setTextで書き込んだ値を比較して正しいかを調べる
+/*void checkTextForCheck() {
+    int i;
+    char theory1[KETA];
+    char theory2[KETA];
+    char theory3[KETA];
+    char calc1[KETA];
+    char calc2[KETA];
+    char calc3[KETA];
+
+    // 理論値の読み込み
+    scanf("%s", theory1);
+    scanf("%s", theory2);
+    scanf("%s", theory3);
+    // 計算した値の読み込み
+    scanf("%s", calc1);
+    scanf("%s", calc2);
+    scanf("%s", calc3);
+
+    for (i = 0; i < KETA;i++){
+        if(theory1[i] != calc1[i]){
+            printf("\nネイピア数の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory1[i], calc1[i]);
+        }
+        if(theory2[i] != calc2[i]){
+            printf("\n平方根の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory2[i], calc2[i]);
+        }
+        if(theory3[i] != calc3[i]){
+            printf("\n三乗根の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory3[i], calc3[i]);
+        }
+    }    
+}*/
+
+// aの桁数を調べて戻り値で返す
+int getDigit(struct NUMBER *a) {
+    int i;
+
+    for (i = KETA - 1; i >= 0; i--) {
+        if(a->n[i] != 0){ // 値を上から見て最初に0で無い数が出てきたところ
+            return i + 1; // i + 1の値が桁数
+        }
+    }
+
+    return 0; // aの値が0のとき
 }
 
 // デバック用
-int curt2(struct NUMBER *a, struct NUMBER *b) {
-    struct NUMBER x, ox, tx, px, dx, zero, one, two, three, quotient, sum, rest; // x:現在の平方根の近似値,ox:1つ前のx,tx:2つ前のx
-    //clearByZero(b);
-    setInt(&zero, 0);
-    setInt(&one, 1);
-    setInt(&two, 2);
-    setInt(&three, 3);
-
-    quickDivide(a, &two, &x, &rest);
-    if(isZero(&x) != -1 || numComp(&x, &one) == 0){ // a = 0 or 1なら curt(a) = a
-        copyNumber(a, b);
-        return 0;
-    }
-    if (numComp(&x, &zero) == -1){ // a < 0ならエラーで-1を返す
-        return -1;
-    }
-
-    copyNumber(&x, &ox);
-
-    while(1){
-        copyNumber(&ox, &tx); // tx = 2つ前のx
-        copyNumber(&x, &ox); // ox = 1つ前のx
-        power(&ox, &two, &px); // px = ox^2
-        /*printf("a:");
-        dispNumberZeroSuppress(a);
-        puts("");
-        printf("px:");
-        dispNumberZeroSuppress(&px);
-        puts("");*/
-        quickDivide(a, &px, &quotient, &rest);
-        /*printf("a2:");
-        dispNumberZeroSuppress(a);
-        puts("");
-        printf("px2:");
-        dispNumberZeroSuppress(&px);
-        puts("");
-        printf("quotient2:");
-        dispNumberZeroSuppress(&quotient);
-        puts("");*/
-
-        /*printf("ox:");
-        dispNumberZeroSuppress(&ox);
-        puts("");*/
-        multiple(&ox, &two, &dx); // dx = 2ox
-        /*printf("dx:");
-        dispNumberZeroSuppress(&dx);
-        puts("");*/
-
-        /*printf("dx:");
-        dispNumberZeroSuppress(&dx);
-        puts("");
-        printf("quo:");
-        dispNumberZeroSuppress(&quotient);
-        puts("");*/
-        add(&dx, &quotient, &sum);
-        /*printf("sum:");
-        dispNumberZeroSuppress(&sum);
-        puts("");*/
-        quickDivide(&sum, &three, &x, &rest);
-
-        printf("x:");
-        dispNumberZeroSuppress(&x);
-        puts("");
-        
-        if(numComp(&x, &ox) == 0){ // 収束
-            puts("収束");
-            break;
-        }
-        if(numComp(&x, &tx) == 0){ // 振動
-            puts("振動");
-            if(numComp(&ox, &x) == -1){ // 小さい方を取る
-                copyNumber(&ox, &x);
-            }
-            break;
-        }
-    }
-
-    copyNumber(&x, b);
-    return 0;
-}
-
-/*int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
+int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
     struct NUMBER tmp1, tmp2, a_tmp, e;
 
     if(isZero(b) != -1){ // ゼロ除算エラー
@@ -926,14 +966,15 @@ int curt2(struct NUMBER *a, struct NUMBER *b) {
             dispNumberZeroSuppress(d);
             puts("");
             copyNumber(b, d); // 3
-            printf("d2:");
+            printf("d1:");
             dispNumberZeroSuppress(d);
             puts("");
             setInt(&e, 1); // 4
-            int val1,val2;
+            //int val1,val2;
             while(1){ // a > dになる最大のdを探す
                 if(numComp(&a_tmp, d) >= 0){
-                    printf("d1:");
+                    sleep(1);
+                    printf("d2:");
                     dispNumberZeroSuppress(d);
                     puts("");
                     mulBy10(d, &tmp1);
@@ -945,14 +986,14 @@ int curt2(struct NUMBER *a, struct NUMBER *b) {
                     copyNumber(&tmp1, d);
                     divBy10(&e, &tmp2);
                     copyNumber(&tmp2, &e);
-                    printf("d2:");
+                    printf("d3:");
                     dispNumberZeroSuppress(d);
                     puts("");
                     break;
                 }
             }
-            printf("val1:%d\nval2:%d\n", val1, val2);
-            printf("d3:");
+            //printf("val1:%d\nval2:%d\n", val1, val2);
+            printf("d4:");
             dispNumberZeroSuppress(d);
             puts("");
             sub(&a_tmp, d, &tmp1); // 7
@@ -970,4 +1011,4 @@ int curt2(struct NUMBER *a, struct NUMBER *b) {
     }
 
     return 0;
-}*/
+}
