@@ -29,7 +29,8 @@ int main(int argc, char **argv)
     //checkTextForCheck();
     val = getDigit(&a);
     printf("\nval1:%d\n", val);
-    // exit(1);
+    compareNumber(&a, "neipia.txt", val);
+    //exit(1);
     
     double t3 = time(NULL);
     printf("\n途中時間:%f\n", t3 - t1);
@@ -40,6 +41,7 @@ int main(int argc, char **argv)
     dispNumberZeroSuppress(&c);
     val = getDigit(&c);
     printf("\nval2:%d\n", val);
+    compareNumber(&c, "sqrtE.txt", val);
     t3 = time(NULL);
     printf("\n途中時間:%f\n", t3 - t1);
     printf("\n三乗根計算開始\n");
@@ -66,6 +68,7 @@ int main(int argc, char **argv)
     dispNumberZeroSuppress(&d);
     val = getDigit(&d);
     printf("\nval3:%d\n", val);
+    compareNumber(&d, "curtE.txt", val);
     //setText(&a, 7);
     //setText(&c, 8);
     //setText(&d, 9);

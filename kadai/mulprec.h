@@ -39,5 +39,6 @@ int curt(struct NUMBER *, struct NUMBER *);
 void setTextForCheck(struct NUMBER *);
 void checkTextForCheck();
 int getDigit(struct NUMBER *);
+void compareNumber(struct NUMBER *, char *, int);
 
 //#endif

@@ -371,7 +371,7 @@ int add(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c) {
     } else if(getSign(a) < 0 && getSign(b) > 0){ // c = b - |a|
         getAbs(a, &a_abs);
         sub(b, &a_abs, c);
-    } else if(getSign(a) < 0 && getSign(b) < 0){ // // c = -(|a| + |b|)
+    } else if(getSign(a) < 0 && getSign(b) < 0){ // c = -(|a| + |b|)
         getAbs(a, &a_abs);
         getAbs(b, &b_abs);
         add(&a_abs, &b_abs, c);
@@ -803,6 +803,35 @@ int curt(struct NUMBER *a, struct NUMBER *b) {
     return 0;
 }
 
+// 理論値と計算した値を比較する
+void compareNumber(struct NUMBER *a, char *filename, int digit) {
+    FILE *fp;
+    int i;
+    int j = 1;
+    int flag = digit;
+    int theory[KETA];
+
+    if ((fp = fopen(filename, "r")) == NULL) {
+		printf("ファイルをオープンできません。\n");
+	} else {
+        for (i = digit - 1; i >= 0;i--){
+            fscanf(fp, "%1d", &theory[i]);
+            if (a->n[i] != theory[i]){
+                printf("%d番目の値が違います\n計算値%d\n理論値%d\n", j, a->n[i], theory[i]);
+                if (flag == digit){
+                    flag = j - 1;
+                }
+            }
+            j++;
+        }
+        if(flag == digit){
+            printf("%d桁目まで完全一致", flag);
+        } else {
+            printf("%d桁目まで一致", flag);
+        }
+    }
+}
+
 // 多倍長の値をtextに書き込む
 void setTextForCheck(struct NUMBER *a) {
     FILE *fp;
@@ -831,7 +860,7 @@ void setTextForCheck(struct NUMBER *a) {
 }
 
 // setTextで書き込んだ値を比較して正しいかを調べる
-void checkTextForCheck() {
+/*void checkTextForCheck() {
     FILE *fp;
     int i;
     char theory1[KETA];
@@ -872,7 +901,7 @@ void checkTextForCheck() {
             printf("\n三乗根の%d桁目の値が違います\ntheory:%c\ncalc:%c\n", i, theory3[i], calc3[i]);
         }
     }    
-}
+}*/
 
 // setTextで書き込んだ値を比較して正しいかを調べる
 /*void checkTextForCheck() {
@@ -920,7 +949,7 @@ int getDigit(struct NUMBER *a) {
 }
 
 // デバック用
-int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
+/*int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NUMBER *d) {
     struct NUMBER tmp1, tmp2, a_tmp, e;
 
     if(isZero(b) != -1){ // ゼロ除算エラー
@@ -1011,4 +1040,4 @@ int quickDivide2(struct NUMBER *a, struct NUMBER *b, struct NUMBER *c, struct NU
     }
 
     return 0;
-}
+}*/
